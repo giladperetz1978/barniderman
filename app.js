@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- State & Constants ---
+    const launchSplash = document.getElementById('launchSplash');
+    const minSplashDurationMs = 3000;
     let soundEnabled = true;
     let currentRole = 'trainee'; // 'trainee' or 'trainer'
     let selectedTraineeId = '';
@@ -820,4 +822,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Start App ---
     initTraineeView();
+
+    const elapsedSinceNavigation = performance.now();
+    const remainingSplashTime = Math.max(0, minSplashDurationMs - elapsedSinceNavigation);
+
+    setTimeout(() => {
+        document.body.classList.add('app-ready');
+        if (launchSplash) {
+            launchSplash.classList.add('is-exiting');
+            setTimeout(() => {
+                launchSplash.remove();
+            }, 450);
+        }
+    }, remainingSplashTime);
 });
