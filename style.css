@@ -991,6 +991,10 @@ body {
     gap: 20px;
 }
 
+.trainer-dashboard > * {
+    min-width: 0;
+}
+
 @media (max-width: 900px) {
     .trainer-dashboard {
         grid-template-columns: 1fr;
@@ -1027,6 +1031,7 @@ body {
     white-space: nowrap;
     cursor: pointer;
     transition: var(--transition);
+    flex: 0 0 auto;
 }
 
 .trainer-trainee-tab:hover {
@@ -1042,6 +1047,7 @@ body {
 .trainer-trainee-panel {
     margin-bottom: 0;
     border-left: 4px solid var(--energy-cyan);
+    min-width: 0;
 }
 
 .trainer-panel-header {
@@ -1095,6 +1101,8 @@ body {
     font-size: 0.9rem;
     font-weight: 600;
     text-align: left;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .trainer-actions-row {
@@ -1487,5 +1495,48 @@ body {
 
     .trainer-cheat-value {
         text-align: right;
+    }
+}
+
+@media (max-width: 380px) {
+    .app-container {
+        padding: 10px;
+    }
+
+    .app-header {
+        padding: 12px;
+        border-radius: 16px;
+    }
+
+    .header-title h1 {
+        font-size: 1.35rem;
+    }
+
+    .trainer-trainee-tab {
+        max-width: 78vw;
+        padding: 7px 10px;
+        font-size: 0.82rem;
+    }
+
+    .trainer-trainee-tab span:last-child {
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .trainer-trainee-panel {
+        padding: 12px;
+    }
+
+    .trainer-stat-col {
+        padding: 9px;
+    }
+
+    .club-stat-row {
+        gap: 10px;
+    }
+
+    .club-stat-row span {
+        overflow-wrap: anywhere;
+        word-break: break-word;
     }
 }
