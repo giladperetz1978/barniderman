@@ -2,6 +2,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- State & Constants ---
     const launchSplash = document.getElementById('launchSplash');
     const minSplashDurationMs = 3000;
+    const trainerAuthStorageKey = 'barTrainerAuthenticated';
+    const trainerCredentials = {
+        username: 'bar',
+        password: 'mazda3'
+    };
     let soundEnabled = true;
     let currentRole = 'trainee'; // 'trainee' or 'trainer'
     let selectedTraineeId = '';
@@ -224,6 +229,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const roleTrainerBtn = document.getElementById('roleTrainerBtn');
     const traineeView = document.getElementById('traineeView');
     const trainerView = document.getElementById('trainerView');
+    const trainerLoginModal = document.getElementById('trainerLoginModal');
+    const trainerLoginBackdrop = document.getElementById('trainerLoginBackdrop');
+    const trainerLoginForm = document.getElementById('trainerLoginForm');
+    const trainerUsername = document.getElementById('trainerUsername');
+    const trainerPassword = document.getElementById('trainerPassword');
+    const trainerLoginError = document.getElementById('trainerLoginError');
+    const trainerLoginCancelBtn = document.getElementById('trainerLoginCancelBtn');
     
     const traineeSelect = document.getElementById('traineeSelect');
     const traineeSlogan = document.getElementById('traineeSlogan');
@@ -352,6 +364,33 @@ document.addEventListener('DOMContentLoaded', () => {
         return trainee ? normalizeTraineeWorkouts(trainee) : trainee;
     }
 
+    function isTrainerAuthenticated() {
+        return sessionStorage.getItem(trainerAuthStorageKey) === 'true';
+    }
+
+    function setTrainerAuthenticated(isAuthenticated) {
+        sessionStorage.setItem(trainerAuthStorageKey, isAuthenticated ? 'true' : 'false');
+    }
+
+    function resetTrainerLoginForm() {
+        trainerLoginForm.reset();
+        trainerLoginError.classList.add('hidden');
+    }
+
+    function openTrainerLogin() {
+        resetTrainerLoginForm();
+        trainerLoginModal.classList.remove('hidden');
+        trainerLoginModal.setAttribute('aria-hidden', 'false');
+        setTimeout(() => {
+            trainerUsername.focus();
+        }, 0);
+    }
+
+    function closeTrainerLogin() {
+        trainerLoginModal.classList.add('hidden');
+        trainerLoginModal.setAttribute('aria-hidden', 'true');
+    }
+
     // Update single trainee record
     function updateTraineeRecord(updatedTrainee) {
         const trainees = getTrainees();
@@ -435,7 +474,51 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Role Switching Logic ---
     roleTraineeBtn.addEventListener('click', () => switchRole('trainee'));
-    roleTrainerBtn.addEventListener('click', () => switchRole('trainer'));
+    roleTrainerBtn.addEventListener('click', () => {
+        if (isTrainerAuthenticated()) {
+            switchRole('trainer');
+            return;
+        }
+
+        openTrainerLogin();
+    });
+
+    trainerLoginCancelBtn.addEventListener('click', () => {
+        closeTrainerLogin();
+        switchRole('trainee');
+    });
+
+    trainerLoginBackdrop.addEventListener('click', () => {
+        closeTrainerLogin();
+        switchRole('trainee');
+    });
+
+    trainerLoginForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        const username = trainerUsername.value.trim();
+        const password = trainerPassword.value;
+        const isValid = username === trainerCredentials.username && password === trainerCredentials.password;
+
+        if (!isValid) {
+            trainerLoginError.classList.remove('hidden');
+            trainerPassword.value = '';
+            trainerPassword.focus();
+            soundEngine.play('fail');
+            return;
+        }
+
+        setTrainerAuthenticated(true);
+        closeTrainerLogin();
+        switchRole('trainer');
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && !trainerLoginModal.classList.contains('hidden')) {
+            closeTrainerLogin();
+            switchRole('trainee');
+        }
+    });
 
     function switchRole(role) {
         currentRole = role;

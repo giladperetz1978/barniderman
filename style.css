@@ -456,6 +456,59 @@ body:not(.app-ready) .app-container {
     display: none !important;
 }
 
+.auth-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 11000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.auth-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(4, 3, 10, 0.72);
+    backdrop-filter: blur(10px);
+}
+
+.auth-modal-card {
+    position: relative;
+    width: min(92vw, 420px);
+    margin: 0;
+    border-color: rgba(204, 255, 0, 0.24);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+}
+
+.auth-modal-header {
+    margin-bottom: 16px;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.auth-error {
+    color: #ff7ca8;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.auth-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.auth-actions .secondary-btn,
+.auth-actions .primary-btn {
+    width: auto;
+    min-width: 132px;
+}
+
 /* --- Trainee Profile Area --- */
 .profile-card {
     border-left: 4px solid var(--volt);
@@ -1555,6 +1608,15 @@ body:not(.app-ready) .app-container {
     .primary-btn {
         padding: 12px 16px;
         font-size: 0.95rem;
+    }
+
+    .auth-actions {
+        flex-direction: column-reverse;
+    }
+
+    .auth-actions .secondary-btn,
+    .auth-actions .primary-btn {
+        width: 100%;
     }
 
     .water-container {
