@@ -254,7 +254,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const excuseResponseText = document.getElementById('excuseResponseText');
 
     // Trainer Elements
-    const trainerTraineesList = document.getElementById('trainerTraineesList');
+    const trainerTraineeTabs = document.getElementById('trainerTraineeTabs');
+    const trainerTraineePanel = document.getElementById('trainerTraineePanel');
     const newTraineeName = document.getElementById('newTraineeName');
     const newTraineeEmoji = document.getElementById('newTraineeEmoji');
     const newTraineeSlogan = document.getElementById('newTraineeSlogan');
@@ -275,6 +276,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const toastMessage = document.getElementById('toastMessage');
     const closeToastBtn = document.getElementById('closeToastBtn');
     const confettiContainer = document.getElementById('confettiContainer');
+
+    let trainerActiveTraineeId = null;
 
     // --- Helper Functions ---
     function getTrainees() {
@@ -651,9 +654,24 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- 5. Trainer Dashboard View ---
+    function getTrainerStatusBadge(trainee) {
+        if (trainee.workouts >= 3 && trainee.water >= 8) {
+            return '<span class="status-badge status-hero">חיית כושר 🦖</span>';
+        }
+        if (trainee.water >= 6) {
+            return '<span class="status-badge status-hydrated">הידרציה סבירה 💧</span>';
+        }
+        return '<span class="status-badge status-lazy">עצלן בטטה 🥔</span>';
+    }
+
     function renderTrainerDashboard() {
         const trainees = getTrainees();
-        trainerTraineesList.innerHTML = '';
+        trainerTraineeTabs.innerHTML = '';
+        trainerTraineePanel.innerHTML = '';
+
+        if (!trainerActiveTraineeId || !trainees.some(t => t.id === trainerActiveTraineeId)) {
+            trainerActiveTraineeId = trainees[0]?.id || null;
+        }
 
         let totalSins = 0;
         let totalWater = 0;
@@ -662,37 +680,53 @@ document.addEventListener('DOMContentLoaded', () => {
             totalSins += t.sins;
             totalWater += (t.water * 0.25);
 
-            // Compute trainer status badge
-            let statusBadge = '<span class="status-badge status-lazy">עצלן בטטה 🥔</span>';
-            if (t.workouts >= 3 && t.water >= 8) {
-                statusBadge = '<span class="status-badge status-hero">חיית כושר 🦖</span>';
-            } else if (t.water >= 6) {
-                statusBadge = '<span class="status-badge status-hydrated">הידרציה סבירה 💧</span>';
-            }
-
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>
-                    <div class="trainee-name-cell">
-                        <span class="trainee-emoji">${t.emoji}</span>
-                        <span>${t.name}</span>
-                    </div>
-                </td>
-                <td>${t.workouts}</td>
-                <td>${(t.water * 0.25).toFixed(2)}L</td>
-                <td>${t.sins}</td>
-                <td style="font-size:0.8rem; max-width: 150px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;" title="${t.cheats.join(', ') || 'אין'}">
-                    ${t.cheats.slice(-1)[0] || '<span style="color:#747d8c">נקי מחטאים</span>'}
-                </td>
-                <td>
-                    <div class="action-buttons-cell">
-                        <button class="action-icon-btn whip-btn" title="שלח התרעת שוט" onclick="window.triggerWhipAlert('${t.id}')">💥</button>
-                        <button class="action-icon-btn delete-btn" title="מחק מתאמן" onclick="window.deleteTrainee('${t.id}')">🗑️</button>
-                    </div>
-                </td>
-            `;
-            trainerTraineesList.appendChild(tr);
+            const tabBtn = document.createElement('button');
+            tabBtn.className = `trainer-trainee-tab ${t.id === trainerActiveTraineeId ? 'active' : ''}`;
+            tabBtn.type = 'button';
+            tabBtn.innerHTML = `<span>${t.emoji}</span><span>${t.name}</span>`;
+            tabBtn.addEventListener('click', () => {
+                trainerActiveTraineeId = t.id;
+                renderTrainerDashboard();
+            });
+            trainerTraineeTabs.appendChild(tabBtn);
         });
+
+        const activeTrainee = trainees.find(t => t.id === trainerActiveTraineeId);
+        if (activeTrainee) {
+            const lastCheat = activeTrainee.cheats.slice(-1)[0] || 'נקי מחטאים';
+            const allCheats = activeTrainee.cheats.length ? activeTrainee.cheats.join(', ') : 'אין';
+            trainerTraineePanel.innerHTML = `
+                <div class="trainer-panel-header">
+                    <div class="trainee-name-cell">
+                        <span class="trainee-emoji">${activeTrainee.emoji}</span>
+                        <strong>${activeTrainee.name}</strong>
+                    </div>
+                    ${getTrainerStatusBadge(activeTrainee)}
+                </div>
+                <div class="trainer-stats-grid">
+                    <div class="trainer-stat-col">
+                        <span class="trainer-stat-label">אימונים השבוע</span>
+                        <span class="trainer-stat-value">${activeTrainee.workouts}</span>
+                    </div>
+                    <div class="trainer-stat-col">
+                        <span class="trainer-stat-label">מים (ליטר)</span>
+                        <span class="trainer-stat-value">${(activeTrainee.water * 0.25).toFixed(2)}L</span>
+                    </div>
+                    <div class="trainer-stat-col">
+                        <span class="trainer-stat-label">חטאים</span>
+                        <span class="trainer-stat-value">${activeTrainee.sins}</span>
+                    </div>
+                </div>
+                <div class="trainer-cheat-row" title="${allCheats}">
+                    <span class="trainer-stat-label">חטא אחרון</span>
+                    <span class="trainer-cheat-value">${lastCheat}</span>
+                </div>
+                <div class="action-buttons-cell trainer-actions-row">
+                    <button class="action-icon-btn whip-btn" title="שלח התרעת שוט" onclick="window.triggerWhipAlert('${activeTrainee.id}')">💥</button>
+                    <button class="action-icon-btn delete-btn" title="מחק מתאמן" onclick="window.deleteTrainee('${activeTrainee.id}')">🗑️</button>
+                </div>
+            `;
+        }
 
         // Update stats summary
         clubTotalTrainees.textContent = trainees.length;

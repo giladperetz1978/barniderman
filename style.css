@@ -1002,8 +1002,103 @@ body {
 }
 
 .trainees-list-wrapper {
-    overflow-x: auto;
+    overflow: hidden;
     margin-top: 15px;
+}
+
+.trainer-trainee-tabs {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+}
+
+.trainer-trainee-tab {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(0, 0, 0, 0.25);
+    color: var(--text-main);
+    border-radius: 999px;
+    padding: 8px 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.trainer-trainee-tab:hover {
+    border-color: rgba(204, 255, 0, 0.45);
+}
+
+.trainer-trainee-tab.active {
+    background: rgba(204, 255, 0, 0.12);
+    border-color: var(--volt);
+    color: var(--volt);
+}
+
+.trainer-trainee-panel {
+    margin-bottom: 0;
+    border-left: 4px solid var(--energy-cyan);
+}
+
+.trainer-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.trainer-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(110px, 1fr));
+    gap: 10px;
+}
+
+.trainer-stat-col {
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.trainer-stat-label {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
+
+.trainer-stat-value {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--text-main);
+}
+
+.trainer-cheat-row {
+    margin-top: 12px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px dashed rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.03);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.trainer-cheat-value {
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-align: left;
+}
+
+.trainer-actions-row {
+    margin-top: 12px;
 }
 
 .trainees-table {
@@ -1374,5 +1469,23 @@ body {
         left: 12px;
         bottom: 16px;
         max-width: none;
+    }
+
+    .trainer-panel-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .trainer-stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .trainer-cheat-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .trainer-cheat-value {
+        text-align: right;
     }
 }
