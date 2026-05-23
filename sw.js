@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bar-fit-v1';
+const CACHE_NAME = 'bar-fit-v2';
 const urlsToCache = [
   './',
   './index.html',

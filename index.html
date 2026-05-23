@@ -14,6 +14,31 @@
     <link rel="apple-touch-icon" href="bar_avatar.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <style>
+        /* Critical fallback to keep splash stable even if stale CSS is loaded from cache */
+        body:not(.app-ready) .app-container { opacity: 0; visibility: hidden; pointer-events: none; }
+        #launchSplash { position: fixed; inset: 0; z-index: 12000; display: flex; align-items: center; justify-content: center; padding: 24px; background: #05040f; }
+        #launchSplash .launch-splash-inner { width: min(92vw, 340px); text-align: center; }
+        #launchSplash .launch-splash-logo { width: 84px; height: 84px; border-radius: 50%; }
+    </style>
+    <script>
+        window.__barSplashStart = performance.now();
+        window.addEventListener('DOMContentLoaded', function () {
+            var splash = document.getElementById('launchSplash');
+            var minSplashDurationMs = 3000;
+            var elapsed = performance.now() - (window.__barSplashStart || 0);
+            var remaining = Math.max(0, minSplashDurationMs - elapsed);
+
+            setTimeout(function () {
+                document.body.classList.add('app-ready');
+                if (!splash) return;
+                splash.classList.add('is-exiting');
+                setTimeout(function () {
+                    if (splash.parentNode) splash.parentNode.removeChild(splash);
+                }, 450);
+            }, remaining);
+        });
+    </script>
 </head>
 <body>
     <div id="launchSplash" class="launch-splash" role="status" aria-live="polite">
