@@ -335,12 +335,26 @@
                             <p class="card-desc">המתאמנים קיבלו הודעת דחיפה מצחיקה במכשיר!</p>
                             <div class="challenge-broadcast">
                                 <select id="challengeSelect" class="custom-select select-sm">
-                                    <option value="squats">סקוואט פתע: 50 סקוואטים עכשיו או סנקציות!</option>
-                                    <option value="burpees">מתקפת בורפיז: 20 בורפיז מיד להורדת רמת השווארמה!</option>
-                                    <option value="plank">פלאנק חירום: 2 דקות על המרפקים ובראש מורכן!</option>
-                                    <option value="water">שלוק חירום: ליטר מים עכשיו, המוח שלכם מתייבש!</option>
+                                    <option value="">בחרי אתגר לשידור</option>
                                 </select>
                                 <button id="broadcastBtn" class="primary-btn btn-sm angry-glow-btn">שגר להם עונש! 💥</button>
+                            </div>
+                        </div>
+
+                        <div class="glass-card sidebar-card">
+                            <h3>הוספת תרגיל חדש 🧨</h3>
+                            <div class="add-trainee-form">
+                                <div class="form-group-compact">
+                                    <input type="text" id="newWorkoutText" placeholder="שם התרגיל או המשימה">
+                                </div>
+                                <div class="form-group-compact">
+                                    <select id="newWorkoutDifficulty" class="custom-select select-sm">
+                                        <option value="easy">קל</option>
+                                        <option value="medium" selected>בינוני</option>
+                                        <option value="hard">קשה</option>
+                                    </select>
+                                </div>
+                                <button id="addWorkoutBtn" class="primary-btn btn-sm">הוסף לתוכנית העינויים</button>
                             </div>
                         </div>
 

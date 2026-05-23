@@ -184,6 +184,11 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'w3', text: 'פלאנק של דקה וחצי תוך זעקות שבר קולניות', diff: 'hard', diffLabel: 'קשה' },
         { id: 'w4', text: 'כפיפות בטן כדי לעשות מקום לשווארמה בערב', diff: 'medium', diffLabel: 'בינוני' }
     ];
+    const workoutDifficultyLabels = {
+        easy: 'קל',
+        medium: 'בינוני',
+        hard: 'קשה'
+    };
 
     // Excuses Database
     const excusesTemplates = [
@@ -209,6 +214,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize Trainees in LocalStorage
     if (!localStorage.getItem('trainees')) {
         localStorage.setItem('trainees', JSON.stringify(defaultTrainees));
+    }
+    if (!localStorage.getItem('customWorkoutTemplates')) {
+        localStorage.setItem('customWorkoutTemplates', JSON.stringify([]));
     }
 
     // --- DOM Elements ---
@@ -262,6 +270,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const newTraineeEmoji = document.getElementById('newTraineeEmoji');
     const newTraineeSlogan = document.getElementById('newTraineeSlogan');
     const addTraineeBtn = document.getElementById('addTraineeBtn');
+    const newWorkoutText = document.getElementById('newWorkoutText');
+    const newWorkoutDifficulty = document.getElementById('newWorkoutDifficulty');
+    const addWorkoutBtn = document.getElementById('addWorkoutBtn');
     
     const challengeSelect = document.getElementById('challengeSelect');
     const broadcastBtn = document.getElementById('broadcastBtn');
@@ -290,9 +301,55 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('trainees', JSON.stringify(trainees));
     }
 
+    function getCustomWorkoutTemplates() {
+        return JSON.parse(localStorage.getItem('customWorkoutTemplates') || '[]');
+    }
+
+    function saveCustomWorkoutTemplates(templates) {
+        localStorage.setItem('customWorkoutTemplates', JSON.stringify(templates));
+    }
+
+    function getAllWorkoutTemplates() {
+        return [...workoutTemplates, ...getCustomWorkoutTemplates()];
+    }
+
+    function normalizeTraineeWorkouts(trainee, expectedLength = getAllWorkoutTemplates().length) {
+        const normalized = Array.isArray(trainee.workoutsChecked) ? [...trainee.workoutsChecked] : [];
+
+        while (normalized.length < expectedLength) {
+            normalized.push(false);
+        }
+
+        if (normalized.length > expectedLength) {
+            normalized.length = expectedLength;
+        }
+
+        trainee.workoutsChecked = normalized;
+        return trainee;
+    }
+
+    function syncWorkoutChecklistLengths() {
+        const trainees = getTrainees();
+        const expectedLength = getAllWorkoutTemplates().length;
+        let hasChanges = false;
+
+        trainees.forEach(trainee => {
+            const previousLength = Array.isArray(trainee.workoutsChecked) ? trainee.workoutsChecked.length : 0;
+            normalizeTraineeWorkouts(trainee, expectedLength);
+            if (trainee.workoutsChecked.length !== previousLength || previousLength !== expectedLength) {
+                hasChanges = true;
+            }
+        });
+
+        if (hasChanges) {
+            saveTrainees(trainees);
+        }
+    }
+
     function getCurrentTrainee() {
         const trainees = getTrainees();
-        return trainees.find(t => t.id === selectedTraineeId) || trainees[0];
+        const trainee = trainees.find(t => t.id === selectedTraineeId) || trainees[0];
+        return trainee ? normalizeTraineeWorkouts(trainee) : trainee;
     }
 
     // Update single trainee record
@@ -300,7 +357,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const trainees = getTrainees();
         const index = trainees.findIndex(t => t.id === updatedTrainee.id);
         if (index !== -1) {
-            trainees[index] = updatedTrainee;
+            trainees[index] = normalizeTraineeWorkouts(updatedTrainee);
             saveTrainees(trainees);
             updateStatsUI();
             if (currentRole === 'trainer') {
@@ -399,6 +456,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Trainee Select Box Initialization ---
     function initTraineeSelect() {
+        syncWorkoutChecklistLengths();
         const trainees = getTrainees();
         traineeSelect.innerHTML = '';
         trainees.forEach(t => {
@@ -441,9 +499,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 1. Workout Section ---
     function renderWorkoutList() {
         const trainee = getCurrentTrainee();
+        const allWorkoutTemplates = getAllWorkoutTemplates();
         workoutList.innerHTML = '';
         
-        workoutTemplates.forEach((w, index) => {
+        allWorkoutTemplates.forEach((w, index) => {
             const isCompleted = trainee.workoutsChecked[index] || false;
             
             const li = document.createElement('li');
@@ -481,7 +540,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     finishWorkoutBtn.addEventListener('click', () => {
         const trainee = getCurrentTrainee();
-        const allDone = trainee.workoutsChecked.every(val => val === true);
+        const allDone = trainee.workoutsChecked.length > 0 && trainee.workoutsChecked.every(val => val === true);
         
         if (allDone) {
             trainee.workouts += 1;
@@ -667,6 +726,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderTrainerDashboard() {
+        syncWorkoutChecklistLengths();
         const trainees = getTrainees();
         trainerTraineeTabs.innerHTML = '';
         trainerTraineePanel.innerHTML = '';
@@ -734,6 +794,31 @@ document.addEventListener('DOMContentLoaded', () => {
         clubTotalTrainees.textContent = trainees.length;
         clubTotalSins.textContent = totalSins;
         clubTotalWater.textContent = totalWater.toFixed(1) + 'L';
+
+        renderChallengeOptions();
+    }
+
+    function renderChallengeOptions() {
+        const templates = getAllWorkoutTemplates();
+        const previousValue = challengeSelect.value;
+
+        challengeSelect.innerHTML = '<option value="">בחרי אתגר לשידור</option>';
+
+        templates.forEach(template => {
+            const option = document.createElement('option');
+            option.value = template.id;
+            option.textContent = `${template.text} (${template.diffLabel})`;
+            challengeSelect.appendChild(option);
+        });
+
+        const waterOption = document.createElement('option');
+        waterOption.value = 'water';
+        waterOption.textContent = 'שלוק חירום: ליטר מים עכשיו, המוח שלכם מתייבש!';
+        challengeSelect.appendChild(waterOption);
+
+        if ([...challengeSelect.options].some(option => option.value === previousValue)) {
+            challengeSelect.value = previousValue;
+        }
     }
 
     // Global handles for trainer actions (so onclick attributes in templates function)
@@ -781,7 +866,7 @@ document.addEventListener('DOMContentLoaded', () => {
             water: 0,
             sins: 0,
             cheats: [],
-            workoutsChecked: [false, false, false, false]
+            workoutsChecked: Array(getAllWorkoutTemplates().length).fill(false)
         };
 
         trainees.push(newT);
@@ -797,19 +882,64 @@ document.addEventListener('DOMContentLoaded', () => {
         showToast('נוסף קורבן חדש! ⛓️', `המתאמן ${name} התווסף בהצלחה למאגר של בר.`);
     });
 
+    addWorkoutBtn.addEventListener('click', () => {
+        const text = newWorkoutText.value.trim();
+        const diff = newWorkoutDifficulty.value;
+
+        if (!text) {
+            alert('נא להזין תרגיל חדש לפני ההוספה.');
+            return;
+        }
+
+        const customTemplates = getCustomWorkoutTemplates();
+        const alreadyExists = getAllWorkoutTemplates().some(template => template.text === text);
+
+        if (alreadyExists) {
+            alert('התרגיל הזה כבר קיים בתוכנית.');
+            return;
+        }
+
+        customTemplates.push({
+            id: 'cw' + Date.now(),
+            text,
+            diff,
+            diffLabel: workoutDifficultyLabels[diff] || workoutDifficultyLabels.medium
+        });
+
+        saveCustomWorkoutTemplates(customTemplates);
+        syncWorkoutChecklistLengths();
+        newWorkoutText.value = '';
+        newWorkoutDifficulty.value = 'medium';
+
+        if (currentRole === 'trainer') {
+            renderTrainerDashboard();
+        } else {
+            renderWorkoutList();
+        }
+
+        showToast('נוסף תרגיל חדש! 🧨', `התרגיל "${text}" נוסף לרשימת העינויים.`);
+        soundEngine.play('celebrate');
+    });
+
     // Broadcast challenge toast
     broadcastBtn.addEventListener('click', () => {
         const challenge = challengeSelect.value;
         let challengeMsg = '';
-        
-        if (challenge === 'squats') {
-            challengeMsg = "סקוואט פתע: 50 סקוואטים עכשיו או סנקציות מבר!";
-        } else if (challenge === 'burpees') {
-            challengeMsg = "מתקפת בורפיז: 20 בורפיז מייד להורדת רמת הבורקס!";
-        } else if (challenge === 'plank') {
-            challengeMsg = "פלאנק חירום: 2 דקות על המרפקים ובראש מורכן!";
-        } else {
+
+        if (!challenge) {
+            alert('בחרי אתגר לשידור קודם.');
+            return;
+        }
+
+        if (challenge === 'water') {
             challengeMsg = "שלוק חירום: ליטר מים עכשיו, המוח שלכם מתייבש!";
+        } else {
+            const template = getAllWorkoutTemplates().find(item => item.id === challenge);
+            if (!template) {
+                alert('האתגר שנבחר לא נמצא.');
+                return;
+            }
+            challengeMsg = `אתגר פתע: ${template.text}`;
         }
 
         showToast('💥 אתגר פתע מבר לכולם! 💥', challengeMsg, true);
