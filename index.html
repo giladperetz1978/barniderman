@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bar Fit - בר נידרמן</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Rubik:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <!-- PWA Setup -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ccff00">
+    <link class="favicon" rel="icon" type="image/png" href="bar_avatar.png">
+    <link rel="apple-touch-icon" href="bar_avatar.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+</head>
+<body>
+    <!-- Background Glow FX -->
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-main">
+                <div class="logo-wrapper">
+                    <img src="bar_avatar.png" alt="Bar Fit Logo" id="appLogo" class="app-logo">
+                    <div class="logo-pulse"></div>
+                </div>
+                <div class="header-title">
+                    <h1 class="neon-text">Bar Fit</h1>
+                    <p class="subtitle">האפליקציה הרשמית של המתאמנים של בר נידרמן 🔥</p>
+                </div>
+            </div>
+            
+            <!-- Audio Toggle & Role Switcher -->
+            <div class="header-controls">
+                <button id="soundToggleBtn" class="control-btn sound-btn" title="השתק/הפעל סאונד">
+                    <span id="soundIcon">🔊</span>
+                </button>
+                <div class="role-switcher">
+                    <button id="roleTraineeBtn" class="role-btn active" data-role="trainee">מתאמן/ת 👟</button>
+                    <button id="roleTrainerBtn" class="role-btn" data-role="trainer">בר המלכה 👑</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <main class="app-main">
+            
+            <!-- 1. TRAINEE VIEW -->
+            <section id="traineeView" class="view-section">
+                <!-- Trainee Selector & Stats Card -->
+                <div class="glass-card profile-card">
+                    <div class="profile-header">
+                        <div class="selector-container">
+                            <label for="traineeSelect" class="input-label">מי מתאמן עכשיו?</label>
+                            <select id="traineeSelect" class="custom-select">
+                                <!-- Options will be injected via JS -->
+                            </select>
+                        </div>
+                        <div class="trainee-slogan" id="traineeSlogan">
+                            "אני פה בשביל השוקולד של אחרי האימון"
+                        </div>
+                    </div>
+                    
+                    <!-- Stats Grid -->
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <span class="stat-icon">💪</span>
+                            <div class="stat-details">
+                                <span class="stat-value" id="statWorkouts">0</span>
+                                <span class="stat-label">אימונים השבוע</span>
+                            </div>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-icon">💧</span>
+                            <div class="stat-details">
+                                <span class="stat-value" id="statWater">0L</span>
+                                <span class="stat-label">מים היום</span>
+                            </div>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-icon">🍕</span>
+                            <div class="stat-details">
+                                <span class="stat-value" id="statSins">0</span>
+                                <span class="stat-label">חטאים רשומים</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Tabs -->
+                <div class="tab-navigation">
+                    <button class="tab-btn active" data-tab="tabWorkout">📋 תוכנית עינויים</button>
+                    <button class="tab-btn" data-tab="tabConfess">🍕 תא הווידויים</button>
+                    <button class="tab-btn" data-tab="tabWater">💧 מדד התייבשות</button>
+                    <button class="tab-btn" data-tab="tabExcuse">🗣️ תירוצים לבר</button>
+                </div>
+
+                <!-- Tab Content 1: Workouts -->
+                <div id="tabWorkout" class="tab-content active">
+                    <div class="glass-card">
+                        <div class="card-header">
+                            <h2>תוכנית העינויים היומית 💀</h2>
+                            <p class="card-desc">סמן וי על מה ששרדת היום. בר עוקבת אחריך!</p>
+                        </div>
+                        
+                        <ul id="workoutList" class="workout-list">
+                            <!-- Items injected via JS -->
+                        </ul>
+                        
+                        <div class="card-actions">
+                            <button id="finishWorkoutBtn" class="primary-btn glow-btn">
+                                סיימתי הכל! שחררי אותי הביתה 🏆
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Content 2: Cheat Meal Confession -->
+                <div id="tabConfess" class="tab-content">
+                    <div class="glass-card">
+                        <div class="card-header">
+                            <h2>תא הווידויים של הצ'יט מיל 🍕🍩</h2>
+                            <p class="card-desc">אכלת משהו אסור? תתוודה עכשיו לפני שבר תגלה לבד!</p>
+                        </div>
+
+                        <div class="confession-form">
+                            <div class="form-group">
+                                <label class="input-label">מה שמת בפה? 🫢</label>
+                                <div class="cheat-grid">
+                                    <button class="cheat-item-btn" data-cheat="פיצה">🍕 פיצה</button>
+                                    <button class="cheat-item-btn" data-cheat="המבורגר וצ'יפס">🍔 המבורגר</button>
+                                    <button class="cheat-item-btn" data-cheat="בורקס גבינה חם">🥐 בורקס</button>
+                                    <button class="cheat-item-btn" data-cheat="גלידה דליקטס">🍦 גלידה</button>
+                                    <button class="cheat-item-btn" data-cheat="וופל בלגי מוגזם">🧇 קינוח מושחת</button>
+                                    <button class="cheat-item-btn" data-cheat="אחר">🤷‍♂️ משהו אחר...</button>
+                                </div>
+                                <input type="text" id="customCheatInput" class="custom-input hidden" placeholder="מה בדיוק בלסת?">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="input-label">כמה אכלת? (מדד רמת הפשע) ⚖️</label>
+                                <input type="range" id="cheatGuiltRange" min="1" max="5" value="3" class="guilt-slider">
+                                <div class="slider-labels">
+                                    <span>רק ביס 🤏</span>
+                                    <span>חצי מנה 🤷‍♀️</span>
+                                    <span>חיסלתי הכל 🦖</span>
+                                </div>
+                            </div>
+
+                            <button id="confessBtn" class="primary-btn confess-submit-btn">
+                                שלח וידוי לבר וקבל עונש 💥
+                            </button>
+                        </div>
+
+                        <!-- Scanner Loader Effect -->
+                        <div id="guiltScanner" class="guilt-scanner hidden">
+                            <div class="scanner-line"></div>
+                            <p class="scanner-text">סורק רמות אשמה ובושה...</p>
+                        </div>
+
+                        <!-- Confession Result Screen -->
+                        <div id="confessionResult" class="confession-result glass-card hidden">
+                            <div class="bar-reaction-header">
+                                <span id="barReactEmoji" class="bar-react-emoji">🤬</span>
+                                <div class="bar-react-text">
+                                    <h3>בר אומרת:</h3>
+                                    <p id="barReactQuote">"אין לי מילים. פשוט בושה."</p>
+                                </div>
+                            </div>
+                            <div class="punishment-box">
+                                <span class="punish-title">🚨 גזר הדין שלך (אין רחמים) 🚨</span>
+                                <p id="punishmentText">150 ג'אמפינג ג'קס מייד תוך כדי בכי!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Content 3: Water Tracker -->
+                <div id="tabWater" class="tab-content">
+                    <div class="glass-card water-tracker-card">
+                        <div class="card-header">
+                            <h2>מדד ההתייבשות הלאומי 💧</h2>
+                            <p class="card-desc">אל תהיה סמרטוט יבש! סמן כמה כוסות שתית היום.</p>
+                        </div>
+
+                        <div class="water-container">
+                            <!-- Visual Bottle -->
+                            <div class="bottle-wrapper">
+                                <div class="bottle-cap"></div>
+                                <div class="bottle-body">
+                                    <div id="bottleWaterLevel" class="bottle-water-level" style="height: 0%;"></div>
+                                    <div class="bottle-marks">
+                                        <span>3L</span>
+                                        <span>2L</span>
+                                        <span>1L</span>
+                                    </div>
+                                    <span id="bottleTextPercent" class="bottle-percent">0%</span>
+                                </div>
+                            </div>
+
+                            <!-- Water Actions -->
+                            <div class="water-actions">
+                                <div class="water-counter">
+                                    <button id="waterMinusBtn" class="circle-btn">-</button>
+                                    <span id="waterCount">0</span>
+                                    <button id="waterPlusBtn" class="circle-btn">+</button>
+                                </div>
+                                <p class="water-volume-text">סה"כ: <span id="waterVolume">0</span> ליטר</p>
+                                
+                                <div class="bar-speech-bubble" id="waterSpeech">
+                                    "כרגע אתה נראה כמו שזיף מיובש בארגז של ט"ו בשבט. תשתה!"
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Content 4: Excuses to Bar -->
+                <div id="tabExcuse" class="tab-content">
+                    <div class="glass-card">
+                        <div class="card-header">
+                            <h2>מחולל התירוצים לבר 🗣️</h2>
+                            <p class="card-desc">לא יכול להגיע לאימון? תייצר תירוץ מדעי מושלם ונראה אם תשרוד את הזעם שלה.</p>
+                        </div>
+
+                        <div class="excuse-generator">
+                            <div class="excuse-box">
+                                <p id="generatedExcuseText">"השרירים שלי תפוסים מהמחשבה על להתאמן היום."</p>
+                                <button id="generateExcuseBtn" class="secondary-btn">🎲 תחתך לי תירוץ אחר</button>
+                            </div>
+
+                            <button id="sendExcuseBtn" class="primary-btn angry-glow-btn">
+                                שלח את התירוץ לבר ⚡
+                            </button>
+
+                            <!-- Bar's excuse response -->
+                            <div id="excuseResponseCard" class="excuse-response-card glass-card hidden">
+                                <div class="bar-angry-avatar">
+                                    <img src="bar_avatar.png" alt="Bar" class="mini-avatar">
+                                    <span class="angry-badge">🤬</span>
+                                </div>
+                                <div class="response-content">
+                                    <h3>התגובה של בר:</h3>
+                                    <p id="excuseResponseText">"תירוץ של חלשים! 50 סקוואטים עכשיו ואין שחרור!"</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. TRAINER VIEW (BAR'S CONTROL ROOM) -->
+            <section id="trainerView" class="view-section hidden">
+                <!-- Trainer Dashboard Cards -->
+                <div class="trainer-dashboard">
+                    
+                    <!-- Left: Trainee Monitor List -->
+                    <div class="glass-card trainees-monitor">
+                        <div class="card-header">
+                            <h2>העבדים שלך (מעקב מתאמנים) 📋</h2>
+                            <p class="card-desc">כאן את יכולה לראות מי מתאמן ומי מתעצל בזמן אמת.</p>
+                        </div>
+                        
+                        <div class="trainees-list-wrapper">
+                            <table class="trainees-table">
+                                <thead>
+                                    <tr>
+                                        <th>שם המתאמן</th>
+                                        <th>אימונים השבוע</th>
+                                        <th>מים (ליטר)</th>
+                                        <th>חטאים (צ'יט מילס)</th>
+                                        <th>סטטוס אחרון</th>
+                                        <th>פעולות מהירות</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="trainerTraineesList">
+                                    <!-- Injected via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Right: Quick Settings & Add Trainee -->
+                    <div class="trainer-sidebar">
+                        
+                        <!-- Add Trainee Form -->
+                        <div class="glass-card sidebar-card">
+                            <h3>הוספת קורבן חדש 👟</h3>
+                            <div class="add-trainee-form">
+                                <div class="form-group-compact">
+                                    <input type="text" id="newTraineeName" placeholder="שם המתאמן (למשל: יוסף הפיתה)">
+                                </div>
+                                <div class="form-group-compact">
+                                    <input type="text" id="newTraineeEmoji" placeholder="אימוג'י מייצג (למשל: 🥐)" maxlength="2">
+                                </div>
+                                <div class="form-group-compact">
+                                    <input type="text" id="newTraineeSlogan" placeholder="משפט התירוצים המועדף שלו">
+                                </div>
+                                <button id="addTraineeBtn" class="primary-btn btn-sm">הוסף למאגר העבדים ⛓️</button>
+                            </div>
+                        </div>
+
+                        <!-- Broadcast Challenge -->
+                        <div class="glass-card sidebar-card">
+                            <h3>שליחת אתגר פתע ⚡</h3>
+                            <p class="card-desc">המתאמנים קיבלו הודעת דחיפה מצחיקה במכשיר!</p>
+                            <div class="challenge-broadcast">
+                                <select id="challengeSelect" class="custom-select select-sm">
+                                    <option value="squats">סקוואט פתע: 50 סקוואטים עכשיו או סנקציות!</option>
+                                    <option value="burpees">מתקפת בורפיז: 20 בורפיז מיד להורדת רמת השווארמה!</option>
+                                    <option value="plank">פלאנק חירום: 2 דקות על המרפקים ובראש מורכן!</option>
+                                    <option value="water">שלוק חירום: ליטר מים עכשיו, המוח שלכם מתייבש!</option>
+                                </select>
+                                <button id="broadcastBtn" class="primary-btn btn-sm angry-glow-btn">שגר להם עונש! 💥</button>
+                            </div>
+                        </div>
+
+                        <!-- Statistics Summary -->
+                        <div class="glass-card sidebar-card">
+                            <h3>נתוני מועדון 📊</h3>
+                            <div class="club-stats">
+                                <div class="club-stat-row">
+                                    <span>סה"כ קורבנות רשומים:</span>
+                                    <span id="clubTotalTrainees" class="glow-value">0</span>
+                                </div>
+                                <div class="club-stat-row">
+                                    <span>חטאים מצטברים השבוע:</span>
+                                    <span id="clubTotalSins" class="glow-value text-red">0</span>
+                                </div>
+                                <div class="club-stat-row">
+                                    <span>סה"כ ליטר מים שחוסל:</span>
+                                    <span id="clubTotalWater" class="glow-value text-blue">0L</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+        </main>
+        
+        <!-- App Footer Info -->
+        <footer class="app-footer">
+            <p>© 2026 Bar Fit. נוצר באהבה, זיעה ודמעות עבור בר נידרמן ומתאמניה 💖</p>
+        </footer>
+    </div>
+
+    <!-- Notification Toast / Alert Alert (For whip alerts and custom messages) -->
+    <div id="toastNotification" class="toast-notification hidden">
+        <div class="toast-content">
+            <span class="toast-icon">💥</span>
+            <div class="toast-text">
+                <h4 id="toastTitle">התרעת שוט מבר! 🚨</h4>
+                <p id="toastMessage">תפסיק לגעת במקרר ותעשה 30 סקוואטים מייד!</p>
+            </div>
+        </div>
+        <button id="closeToastBtn" class="toast-close">&times;</button>
+    </div>
+
+    <!-- Confetti Canvas Container -->
+    <div id="confettiContainer" class="confetti-container"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>

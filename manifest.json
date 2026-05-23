@@ -1,0 +1,17 @@
+{
+  "name": "Bar Fit - בר נידרמן",
+  "short_name": "Bar Fit",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0a0813",
+  "theme_color": "#ccff00",
+  "description": "אפליקציית הכושר המטורפת של בר נידרמן והמתאמנים שלה!",
+  "icons": [
+    {
+      "src": "./bar_avatar.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
